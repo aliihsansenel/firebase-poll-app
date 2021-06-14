@@ -3,7 +3,7 @@ var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
 var poll = document.getElementById('poll');
 
 var pollList = document.querySelector("#poll ul");
-var pollData;
+var pollData = {};
 
 
 // Your web app's Firebase configuration
@@ -58,6 +58,8 @@ db.ref('polls/' + /*pollId*/'test').on('value', function (snapshot) {
     console.log('then içindeyiz');
 });
 
+//update db.ref('polls/' + 'test').update(/* buraya object yapısı*/)
+//remove db.ref('polls/' + 'test').remove();
 
 
 // pollData'yı ayarladıktan sonra bu çalışınca anketin içini dolduruyor.
