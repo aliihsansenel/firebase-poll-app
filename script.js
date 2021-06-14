@@ -54,8 +54,6 @@ var db = firebase.database();
 db.ref('polls/' + /*pollId*/'test').on('value', function (snapshot) {
     pollData = snapshot.val();
     updatePoll();
-}).then(function name(params) {
-    console.log('then içindeyiz');
 });
 
 //update db.ref('polls/' + 'test').update(/* buraya object yapısı*/)
@@ -101,11 +99,24 @@ function updatePoll(){
     if (width > 768){
         console.log('width > 768');
         poll.classList.add('animation');
-        
+        poll.addEventListener("animationend", function name() {
+            poll.classList.remove('animation');
+        });
     }
     
     poll.classList.add('visible');
 }
+// console.log(document.getElementById('fetchPoll'));
+
+// Butona basıldığında 
+document.getElementById('fetchPoll').addEventListener('click', function () {
+    poll.classList.remove('visible');
+    poll.classList.remove('voted');
+    db.ref('polls/' + /*pollId*/'first').on('value', function (snapshot) {
+        pollData = snapshot.val();
+        updatePoll();
+    });
+});
 
 // window.onload = function(){
     
@@ -175,3 +186,5 @@ function updatePoll(){
 
 //     console.log(firebase.database());
 // });
+
+

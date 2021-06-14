@@ -9,7 +9,8 @@
 body {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    flex-direction: column;
     min-height: 100vh;
     background: #6665ee;
 }
@@ -28,6 +29,7 @@ ul {
 
     background: #fff;
     border-radius: 15px;
+    margin-top: 5rem;
     padding: 1.5em 1.5em 1.1em 1.5em;
     min-width: 350px;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
@@ -38,6 +40,9 @@ ul {
 }
 #poll.visible {
     visibility: visible;
+}
+#poll.hidden {
+    visibility: hidden;
 }
 #poll.animation {
     visibility: visible;
@@ -137,18 +142,24 @@ input.circle:hover::after {
     top: 2px;
 }
 
+#pollFetcher {
+    background-color: pink;
 
+    margin:  3rem;
+}
+#pollFetcher input[type=button] {
 
+    padding: 1.0em 0.8em;
+}
 
 
 
 @keyframes fadeInTop {
     from {
-        margin-top: -15%;
+        transform: translateY(-15%)  ;
         opacity: 40%;
     }
     to {
-        margin-top: 0%;
         opacity: 100%;
     }
 }
