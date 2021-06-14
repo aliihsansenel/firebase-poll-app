@@ -108,11 +108,15 @@ function updatePoll(){
 }
 // console.log(document.getElementById('fetchPoll'));
 
+
+var counter = 0;
+let polls = ['first', 'second', 'third'];
 // Butona basıldığında 
 document.getElementById('fetchPoll').addEventListener('click', function () {
+    let pollToBeFetched = counter < polls.length - 1 ? counter++ : polls.length - 1;
     poll.classList.remove('visible');
     poll.classList.remove('voted');
-    db.ref('polls/' + /*pollId*/'first').on('value', function (snapshot) {
+    db.ref('polls/' + polls[pollToBeFetched]).on('value', function (snapshot) {
         pollData = snapshot.val();
         updatePoll();
     });
