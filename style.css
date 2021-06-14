@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #6665ee;
+}
+ul {
+    list-style-type: none;
+}
+
+::selection {
+    color: #fff;
+    background: #6665ee;
+}
+
+#poll {
+    display: flex;
+    flex-direction: column;
+
+    background: #fff;
+    border-radius: 15px;
+    padding: 1.5em 1.5em 1.1em 1.5em;
+    min-width: 350px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+
+    visibility: hidden;
+    
+    
+}
+#poll.visible {
+    visibility: visible;
+}
+#poll.animation {
+    visibility: visible;
+    animation: fadeInTop .3s 1 ease-in;
+    /* animation-timing-function: ease-in; */
+    
+}
+#poll:hover {
+    
+}
+#poll > .pollHeader {
+    margin-bottom: 1.0em;
+}
+
+li.option {
+    margin: 0;
+    padding: 0;
+}
+
+li input[type="radio"] {
+    margin-right: 0.6em;
+    height: 1.2em;
+    width: 1.2em;
+}
+li label {
+    display: block;
+    border: 2px solid rgb(219, 219, 219);
+    border-radius: 5px;
+    padding: 0.7em 0.7em 0.4em;
+    transition: all 0.2s ease;
+    margin-bottom: 0.7em;
+}
+li.checked label {
+    border-color: #6665ee;
+}
+li span {
+    font-size: 1em;
+    font-weight: 600;
+}
+li span.percent {
+    float:right;
+    margin-left: 2em;
+    visibility:hidden;
+}
+#poll.voted li span.percent {
+    visibility:visible;
+}
+li .progressBar {
+    height: 7px;
+    width: 100%;
+    position: relative;
+    background: #f0f0f0;
+    margin: 8px 0 3px 0;
+    border-radius: 30px;
+    pointer-events: none;
+}
+
+li .progressBar::after {
+    position: absolute;
+    content: "";
+    height: 100%;
+    background: #ccc;
+    width: 0;
+    border-radius: inherit;
+    transition: all 0.2s ease, width 0.9s ease;
+}
+#poll.voted .progressBar::after {
+    width: calc(1% * var(--w));
+}
+
+input:checked ~ .progressBar::after {
+    background: #6665ee;
+}
+
+input.circle {
+    height: 19px;
+    width: 19px;
+    display: block;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    margin-right: 10px;
+    position: relative;
+}
+
+input:checked.circle {
+    border-color: #6665ee;
+}
+
+input.circle:hover::after {
+    content: "";
+    width: 11px;
+    height: 11px;
+    border-radius: inherit;
+    background: #ccc;
+    position: absolute;
+    left: 2px;
+    top: 2px;
+}
+
+
+
+
+
+
+@keyframes fadeInTop {
+    from {
+        margin-top: -15%;
+        opacity: 40%;
+    }
+    to {
+        margin-top: 0%;
+        opacity: 100%;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    /* For mobile phones: */
+    #poll {
+        width: calc(100% - 40px);
+        visibility: visible;
+    }
+
+}
