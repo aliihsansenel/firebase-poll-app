@@ -15,7 +15,7 @@ var firebaseConfig = {
     storageBucket: "polls-db1a3.appspot.com",
     messagingSenderId: "79023946688",
     appId: "1:79023946688:web:12e2d1133bab93c75c6625"
-  };
+};
 
 
 // Initialize Firebase
@@ -53,6 +53,7 @@ var db = firebase.database();
 //firebase selection
 db.ref('polls/' + /*pollId*/'test').on('value', function (snapshot) {
     pollData = snapshot.val();
+    console.log(pollData);  
     updatePoll();
 });
 
@@ -65,8 +66,9 @@ function updatePoll(){
     document.querySelector('#poll .pollHeader').innerText = pollData.header;
     pollList.innerHTML = '';
     pollData.choices.forEach((element, index) => {
-        let pollElement = document.createElement('li');
-        let percent = Math.round(element.votes * 100 / pollData.totalVotes) ;
+        let pollElement = document.createElement('li'); // seçeneklerden herbiri
+        
+        let percent = Math.round(element.votes * 100 / pollData.totalVotes);
 
         pollElement.innerHTML = 
         `<label for="opt-${index}">
@@ -76,27 +78,17 @@ function updatePoll(){
             <div class="progressBar" style="--w:${percent};"></div> 
         </label>`;
         pollElement.classList.add('option');
+        // console.log(pollElement.children[0]);
+        let pollElementLabel = pollElement.children[0];
+        pollElementLabel.addEventListener("click", (e) => choiceClickHandler(e, pollElement, pollElementLabel));
         pollList.appendChild(pollElement);
         
     });
 
-    // Sadece tıklanan seçeneğin kenarlığını değiştirmek için kod
-    Array.from(pollList.children).forEach(element => {
-        element.onclick = function() {
-            
-            //Her linin checkedini kaldır
-            Array.from(pollList.children).forEach(element => {
-                
-                element.classList.remove('checked');
-            });
-            //sonra sadece seçilene checkhed yaz.
-            element.classList.add('checked');
-            poll.classList.add('voted');
-        };
-        
-    });
 
-    if (width > 768){
+    
+    width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+    if (width > 768) {
         console.log('width > 768');
         poll.classList.add('animation');
         poll.addEventListener("animationend", function name() {
@@ -106,7 +98,23 @@ function updatePoll(){
     
     poll.classList.add('visible');
 }
+
+function choiceClickHandler(event, pollElement, pollElementLabel) {
+    let element = event.target;
+    
+    if(pollElementLabel !== element){
+        event.stopPropagation();
+        return false;
+    }
+    // console.log('geldi');
+    Array.from(pollList.children).forEach(element => {element.classList.remove('checked')});
+
+    //sonra sadece seçilene checkhed yaz.
+    pollElement.classList.add('checked');
+    poll.classList.add('voted');
+}
 // console.log(document.getElementById('fetchPoll'));
+
 
 
 var counter = 0;
@@ -122,6 +130,23 @@ document.getElementById('fetchPoll').addEventListener('click', function () {
     });
 });
 
+
+
+    // Sadece tıklanan seçeneğin kenarlığını değiştirmek için kod
+    // Array.from(pollList.children).forEach(element => {
+    //     element.onclick = function() {
+            
+    //         //Her linin checkedini kaldır
+    //         Array.from(pollList.children).forEach(element => {
+                
+    //             element.classList.remove('checked');
+    //         });
+    //         //sonra sadece seçilene checkhed yaz.
+    //         element.classList.add('checked');
+    //         poll.classList.add('voted');
+    //         console.log("sa");
+    //     };
+    // });
 // window.onload = function(){
     
 //     if (width > 768){
