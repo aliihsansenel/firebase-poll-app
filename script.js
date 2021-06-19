@@ -4,7 +4,11 @@ var poll = document.getElementById('poll');
 
 var pollList = document.querySelector("#poll ul");
 var pollData = {};
+var pollElements = [];
+var pollElementLabels = [];
 
+var isAnyOptionSelected = 0;
+var lastSelectedOption = -1;
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
@@ -53,8 +57,8 @@ var db = firebase.database();
 //firebase selection
 db.ref('polls/' + /*pollId*/'test').on('value', function (snapshot) {
     pollData = snapshot.val();
-    console.log(pollData);  
-    updatePoll();
+    // console.log(pollData);  
+    formPoll();
 });
 
 //update db.ref('polls/' + 'test').update(/* buraya object yapısı*/)
@@ -62,27 +66,37 @@ db.ref('polls/' + /*pollId*/'test').on('value', function (snapshot) {
 
 
 // pollData'yı ayarladıktan sonra bu çalışınca anketin içini dolduruyor.
-function updatePoll(){
+function formPoll(){
+    pollElements = [];
+    pollElementLabels = [];
+    isAnyOptionSelected = 0;
+    lastSelectedOption = -1;
+
     document.querySelector('#poll .pollHeader').innerText = pollData.header;
+    
     pollList.innerHTML = '';
     pollData.choices.forEach((element, index) => {
         let pollElement = document.createElement('li'); // seçeneklerden herbiri
         
-        let percent = Math.round(element.votes * 100 / pollData.totalVotes);
 
+        let percent = Math.round(element.votes * 100 / pollData.totalVotes);
+    
         pollElement.innerHTML = 
         `<label for="opt-${index}">
             <input type="radio" name="r0" id="opt-${index}"><span>${element.choice}</span>
             <span class="percent">%${percent}</span><br>
 
-            <div class="progressBar" style="--w:${percent};"></div> 
+            <div class="progressBar" style="--w:${percent};"></div>
         </label>`;
+
         pollElement.classList.add('option');
-        // console.log(pollElement.children[0]);
         let pollElementLabel = pollElement.children[0];
-        pollElementLabel.addEventListener("click", (e) => choiceClickHandler(e, pollElement, pollElementLabel));
-        pollList.appendChild(pollElement);
+        // console.log(pollElementLabel);
+        pollElementLabel.getElementsByTagName('input')[0].addEventListener('change', (e) => optionClickHandler(e.target));
         
+        pollList.appendChild(pollElement);
+        pollElements.push(pollElement);
+        pollElementLabels.push(pollElementLabel);
     });
 
 
@@ -98,27 +112,57 @@ function updatePoll(){
     
     poll.classList.add('visible');
 }
+function optionClickHandler(input){
+    const index = parseInt(input.getAttribute("id").split('opt-')[1]);
 
-function choiceClickHandler(event, pollElement, pollElementLabel) {
-    let element = event.target;
-    
-    if(pollElementLabel !== element){
-        event.stopPropagation();
-        return false;
+    if(lastSelectedOption === index){
+        // pollElements[index].classList.remove('checked');
+        // isAnyOptionSelected = 0;
+        // lastSelectedOption = -1;
+        // pollElements.forEach((element, index) => {
+        //     updateOptionContent(index);
+        // });
+        return;
     }
-    // console.log('geldi');
-    Array.from(pollList.children).forEach(element => {element.classList.remove('checked')});
+    if(lastSelectedOption != -1){
+        pollElements[lastSelectedOption].classList.remove('checked');
+        updateOptionContent(lastSelectedOption);
 
-    //sonra sadece seçilene checkhed yaz.
-    pollElement.classList.add('checked');
-    poll.classList.add('voted');
+    }else{
+        isAnyOptionSelected = 1;
+        poll.classList.add('voted');
+    }
+    lastSelectedOption = index;
+    pollElements[index].classList.add('checked');
+    updateSelectedOptionContent(index);
+
 }
-// console.log(document.getElementById('fetchPoll'));
 
+function updateOptionContent(index) {
+    let pollChoiceData = pollData.choices[index];
+    let pollElement = pollElements[index];
+    let percent = Math.round(pollChoiceData.votes * 100 / (pollData.totalVotes + isAnyOptionSelected));
 
+    pollElement.getElementsByClassName('percent')[0].innerText = '%' + percent;
+    pollElement.getElementsByClassName('progressBar')[0].style.setProperty('--w', percent.toString());
+    
+    return pollElement;
+    
+}
+function updateSelectedOptionContent(index) {
+    let pollChoiceData = pollData.choices[index];
+    let pollElement = pollElements[index];
+    let percent = Math.round((pollChoiceData.votes + 1) * 100 / (pollData.totalVotes + isAnyOptionSelected));
+
+    pollElement.getElementsByClassName('percent')[0].innerText = '%' + percent;
+    pollElement.getElementsByClassName('progressBar')[0].style.setProperty('--w', percent.toString());
+    
+    return pollElement;
+    
+}
 
 var counter = 0;
-let polls = ['first', 'second', 'third'];
+let polls = ['first', 'second', 'third','fourth'];
 // Butona basıldığında 
 document.getElementById('fetchPoll').addEventListener('click', function () {
     let pollToBeFetched = counter < polls.length - 1 ? counter++ : polls.length - 1;
@@ -126,11 +170,53 @@ document.getElementById('fetchPoll').addEventListener('click', function () {
     poll.classList.remove('voted');
     db.ref('polls/' + polls[pollToBeFetched]).on('value', function (snapshot) {
         pollData = snapshot.val();
-        updatePoll();
+        formPoll();
     });
 });
 
+function vote() {
+    // en güncel anket verisini firebase'de güncelleyecek.
+}
 
+// function optionClickHandler(event, pollElement, pollElementLabel) {
+//     let element = event.target;
+//     if(pollElementLabel !== element){
+//         // console.log('kebe');
+//         // event.preventDefault();
+//         pollElementLabel.click();
+//         //event.preventDefault();
+//         //event.stopPropagation();
+//         return false;
+//     }
+//     // console.log('kontrol geçildi');
+//     isAnyOptionSelected = 1;
+//     Array.from(pollList.children).forEach((pollElement, index) => {
+//         pollElement.classList.remove('checked')
+//         updateOptionContent(pollElement, index);
+
+//     });
+//     // TODO hata burada buraya index bulma konacak label
+//     let forString = pollElementLabel.getAttribute("for");
+    
+//     // console.log(parseInt(forString.split('opt-')[1]));
+//     updateSelectedOptionContent(pollElement, parseInt(forString.split('opt-')[1]));
+//     //sonra sadece seçilene checkhed yaz.
+//     pollElement.classList.add('checked');
+//     poll.classList.add('voted');
+// }
+// console.log(document.getElementById('fetchPoll'));
+
+
+
+// function callPara() {
+    
+//     Array.from(document.querySelectorAll('input')).forEach(element => {
+        
+//         element.addEventListener('change', function () {
+//             console.log(element.checked + element.getAttribute('id'));
+//         });
+//     });
+// }
 
     // Sadece tıklanan seçeneğin kenarlığını değiştirmek için kod
     // Array.from(pollList.children).forEach(element => {
@@ -217,3 +303,5 @@ document.getElementById('fetchPoll').addEventListener('click', function () {
 // });
 
 
+// TODO radio button'a change event listener eklenecek.
+        //pollElementLabel.addEventListener("click", (e) => optionClickHandler(e, pollElement, pollElementLabel));

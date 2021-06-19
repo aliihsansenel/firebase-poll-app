@@ -210,7 +210,7 @@ input.circle:hover::after {
 
 /* @media only screen and (max-width: var(--poll-width)) {
     /* For mobile phones: */
-    body {
-        justify-content: flex-start ;
-    }
-} */
+    /* body {
+        justify-content: flex-start ; */
+    /* } */
+/* } */
