@@ -92,7 +92,7 @@ function formPoll(){
         pollElement.classList.add('option');
         let pollElementLabel = pollElement.children[0];
         // console.log(pollElementLabel);
-        pollElementLabel.getElementsByTagName('input')[0].addEventListener('change', (e) => optionClickHandler(e.target));
+        pollElementLabel.getElementsByTagName('input')[0].addEventListener('click', (e) => optionClickHandler(e.target));
         
         pollList.appendChild(pollElement);
         pollElements.push(pollElement);
@@ -116,12 +116,13 @@ function optionClickHandler(input){
     const index = parseInt(input.getAttribute("id").split('opt-')[1]);
 
     if(lastSelectedOption === index){
-        // pollElements[index].classList.remove('checked');
-        // isAnyOptionSelected = 0;
-        // lastSelectedOption = -1;
-        // pollElements.forEach((element, index) => {
-        //     updateOptionContent(index);
-        // });
+        pollElements[index].classList.remove('checked');
+        input.checked = false;
+        isAnyOptionSelected = 0;
+        lastSelectedOption = -1;
+        pollElements.forEach((element, index) => {
+            updateOptionContent(index);
+        });
         return;
     }
     if(lastSelectedOption != -1){
@@ -130,6 +131,9 @@ function optionClickHandler(input){
 
     }else{
         isAnyOptionSelected = 1;
+        pollElements.forEach((element, index) => {
+            updateOptionContent(index);
+        });
         poll.classList.add('voted');
     }
     lastSelectedOption = index;
